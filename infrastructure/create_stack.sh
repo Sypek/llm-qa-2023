@@ -4,4 +4,4 @@ aws cloudformation create-stack \
   --parameters ParameterKey=S3BucketName,ParameterValue=llmstacks3-s3bucket-1b39zw19b74me \
   --capabilities CAPABILITY_NAMED_IAM
 
-aws cloudformation wait stack-create-complete --stack-name LLMStackS3
+aws cloudformation wait stack-create-complete --stack-name LLMStackKendra
