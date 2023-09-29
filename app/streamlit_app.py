@@ -124,9 +124,9 @@ def write_chat_message(md):
     
         
 with st.container():
-  for (q, a) in zip(st.session_state.questions, st.session_state.answers):
-    render_question(q)
-    write_chat_message(a)
+    for (q, a) in zip(st.session_state.questions, st.session_state.answers):
+        render_question(q)
+        write_chat_message(a)
 
 st.markdown('---')
 input = st.text_input("Please, ask your question.", key="input", on_change=handle_input)
