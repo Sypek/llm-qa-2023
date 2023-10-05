@@ -2,8 +2,8 @@ import os
 from tqdm import tqdm
 import boto3
 
-STACK_NAME = 'LLMStackS3'
-DATA_PATH = 'data/sagemaker_documentation/'
+STACK_NAME = 'LLMStack'
+DATA_PATH = 'data/sagemaker_documentation/'  # local
 
 def get_cloud_formation_outputs() -> dict:
     cf_client = boto3.client('cloudformation')
