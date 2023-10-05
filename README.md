@@ -25,6 +25,8 @@ Mainly, such POC is useful for:
 
 https://github.com/Sypek/llm-qa-2023/assets/44975100/3c60df18-f16e-46cb-ba2c-9774d1cc1e21
 
+https://github.com/Sypek/llm-qa-2023/assets/44975100/23b5638d-43d1-48a0-b47f-7f557c0dbac4
+
 
 
 ### Design
