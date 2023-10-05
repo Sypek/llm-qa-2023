@@ -22,12 +22,17 @@ Mainly, such POC is useful for:
 - Bot is extracting the knowledge from the documents and based on this context, bot is formulating the answer as well as returns relative documents.
 - Bot has the "memory", so context of the conversation is not lost. It allows for asking subsequent questions.
 
+Here are two short video samples showing the solution (they are fast-forwarded). Inference on the local machine is really slow (around 90 seconds).
 
 https://github.com/Sypek/llm-qa-2023/assets/44975100/3c60df18-f16e-46cb-ba2c-9774d1cc1e21
 
 https://github.com/Sypek/llm-qa-2023/assets/44975100/23b5638d-43d1-48a0-b47f-7f557c0dbac4
 
+And couple of screenshots:
 
+![qa1](img/sagemaker_qa.png)
+![qa2](img/sagemaker_regions.png)
+![qa3](img/sagemaker_sso.png)
 
 ### Design
 
