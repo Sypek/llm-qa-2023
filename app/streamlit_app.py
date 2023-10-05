@@ -4,16 +4,12 @@ import uuid
 
 MAX_HISTORY_LENGTH = 5
 
-# Check if the user ID is already stored in the session state
-# If the user ID is not yet stored in the session state, generate a random UUID
-
 if 'user_id' in st.session_state:
     user_id = st.session_state['user_id']
 else:
     user_id = str(uuid.uuid4())
     st.session_state['user_id'] = user_id
 
-# st.session_state['llm_app'] = flanxl
 st.session_state['llm_chain'] = build_chain()
 
 if 'chat_history' not in st.session_state:
@@ -76,8 +72,8 @@ def handle_input():
         chat_history = chat_history[:-1]
 
     llm_chain = st.session_state['llm_chain']
-    # chain = st.session_state['llm_app']
     result = run_chain(llm_chain, input, chat_history)
+    print(result)
     answer = result['answer']
     chat_history.append((input, answer))
     
@@ -89,7 +85,7 @@ def handle_input():
 
     st.session_state.answers.append({
         'answer': result,
-        'sources': 'MOCKED SOURCES',
+        'sources': document_list,
         'id': len(st.session_state.questions)
     })
     st.session_state.input = ""
@@ -108,6 +104,7 @@ def render_answer(answer):
         st.info('Bot:')
     with col2:
         st.info(answer['answer'])
+        # st.info(answer['generated_question'])
 
 def render_sources(sources):
     col1, col2 = st.columns([1,9])
