@@ -16,6 +16,12 @@ Mainly, such POC is useful for:
 - Determining future bottlenecks, i.e.: which components are slowest, where will be the highest traffic, what will be the main cost of the solution, which functionalities are easy / hard to implement, ...
 - Showing customer a first draft of the solution to get initial comments and feedback
 
+### Deliverable
+- Github repository with cloud formation template to create infrastructure and code to deploy the app locally.
+- Conversation bot is able to embedd documents and user queries and find most relevant documents to the query.
+- Bot is extracting the knowledge from the documents and based on this context, bot is formulating the answer as well as returns relative documents.
+- Bot has the "memory", so context of the conversation is not lost. It allows for asking subsequent questions.
+
 
 ### Design
 
@@ -59,7 +65,15 @@ Diagram of the solution can be seen below:
 
 #### Models
 I've used two separate models for this task.
-- One model is designed to compute embeddings, it's a sentence transformer. I've used 
+- One model is designed to compute embeddings. This model is a sentence transformer `huggingface-textembedding-all-MiniLM-L6-v2`
+- The second model is a generative, text2text model, the one used by me locally is `llama-2-7b-chat`.
+
+#### Data processing and conversation chain
+Langchain framework was used for converstion between human and bot.
+
+First documents are read using markdown reader. Then, documents are chunked into the smaller parts, embedded and saved in vector db.
+
+For the conversation purpose, I used `ConversationalRetrievalChain` which allows for conversation with retrieval. Context of the conversation is preserved in the memery which allows to further question having in mind previous parts of discussion. Moreover, the solution returns relevant documents.
 
 
 #### How to improve solution for POC
