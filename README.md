@@ -23,6 +23,10 @@ Mainly, such POC is useful for:
 - Bot has the "memory", so context of the conversation is not lost. It allows for asking subsequent questions.
 
 
+https://github.com/Sypek/llm-qa-2023/assets/44975100/3c60df18-f16e-46cb-ba2c-9774d1cc1e21
+
+
+
 ### Design
 
 As stated in the task description, I focused on using AWS components as much as I could. Also as mentioned before, I focused only on implementing some of the components to simplify the solution. My decission was motivated by the following factors:
