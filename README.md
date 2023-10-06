@@ -45,11 +45,21 @@ In the next sections I will also add comments of possible extensions and things 
 
 #### Solution architecture (POC)
 I've decided to go with pretty straightforward approach of Q&A levering AWS, ML and LLMs.
+
+I've decided to implement RAG solution, which is data retrieval method. It's designed for levereging power of modern LLMs with private data and can be easily described in a couple of steps:
+- Embedding documents - getting numerical representation of text data
+- Similiarity search - based on query, looking for most similar documents to the query
+- Answer generation - documents are added as a context to the query and generative model return the answer.
+
+RAG is also a good first approach as it does not require model fine-tuning. With huge models, fine-tuning is not easy, takes a lot of time and is expensive. Although there are methods like LORA of PEFT to mitigate the complications of fine-tuning by simplifying it or making some tricks to make this process easier. Fine-tuning is not mandatory, although it should improve the quality of the solution, especially for domain specific vocabulary and tasks. In this task, fine-tuning could lead to better representation of hte documents for unseen words and concepts. In our scenario, there are a lot of domain specific words around Sagemaker and in general, docs are quite similar (as comparing to any other documents we can think of). The main consequence is, that embeddings of those texts will be very similar (documentes are close to each other in multi dimensional space) which makes retrieval a harder task.
+
 Infrastrucure on AWS account was created using CloudFormation.
 
 Infrastructure components:
 - GUI (chat interface): Streamlit app
-- Model serving: SageMaker Endpoint 
+- Model serving: 
+    - SageMaker Endpoint (embeddings)
+    - Local (generative)
 - Storage: S3 bucket
 - LLM framework: Langchain
 - Vector database: Chroma
@@ -73,6 +83,16 @@ Diagram of the solution can be seen below:
     - Models were initially hosted as Sagemaker Endpoints but due to quotas on my test account, I was only able to host a single endpoint, which was used to trigger calculation of embeddigns.
     - The other model (generative one) was hosted by me locally using GPT4All.
 
+Note: I was experimenting with AWS Kendra for documentation retrieval system, which could replace both embeddigs and vector database component, but due to some limitations of Kendra, solution was not working properly.
+
+Other questions from the task that are not implemented by I want to share my ideas how I would approach it:
+- Allows users to use only some documents:
+    - If we know the users of our app, those are registered users for exmaple, we can "attach" region to each user and use filtering at the level of database retrieval to limit results only to the ones that are matching the region. How? Add metadata to each document. This should be easy task.
+    - Deploying whole solution in different regions and adding users to different regions. Each s3 bucket in different region will store only applicable documents.
+    - Or create different buckets for certain documents and add rules (based i.e. on geolocation of API calls) and limit access only to some resources.
+    
+- Updating the documnets:
+    - That's mostly at the level of storage layer (s3) and data ingestion layer to vector db. Depending on the scenario, we can embedd new version of document and delete the previous one as soon as new document will be added to s3. Or we can do batch transorm update (once a day, one a week, ...).
 
 #### Models
 I've used two separate models for this task.
@@ -84,7 +104,11 @@ Langchain framework was used for converstion between human and bot.
 
 First documents are read using markdown reader. Then, documents are chunked into the smaller parts, embedded and saved in vector db.
 
-For the conversation purpose, I used `ConversationalRetrievalChain` which allows for conversation with retrieval. Context of the conversation is preserved in the memery which allows to further question having in mind previous parts of discussion. Moreover, the solution returns relevant documents.
+For the conversation purpose, I used `ConversationalRetrievalChain` which allows for conversation with retrieval. Context of the conversation is preserved in the memery which allows to further question having in mind previous parts of discussion. Moreover, the solution returns relevant documents. 
+
+Note: As sample questions are rather specific to a single document, in my approach documents are stuffed and combinded. This approach is sufficient for questions were answer in not spreaded among many documents. If that was the case, some other approach should be used, for example some form of map-reduce.
+
+What is important in chunking and documents retrieval: Transformer models are working with tokens and each model has a maximum capability of handling X tokens. So while providing documents to the transformer, the documents cannot be too long and we cannot use too many documents as well.
 
 
 #### How to improve solution for POC
@@ -120,6 +144,26 @@ Description:
 **What is important in this solution, is that everything is managed by AWS and almost every component is serverless.**
 
 ![Solution production](img/llm_qa_poc_stage_3.png)
+
+
+#### Last part: model evaluation
+This is still ongoing research on how to evaluate LLM systems but here are some of my ideas.
+
+- Budget
+    - Depending on the budget, we need to adjust instance types and required latency which will have an impact on the model. Probably, the smaller the model the worse results we can obtain.
+- Experts
+    - For domain knowledge, experts knowledge can be very valuable to manually determine which answers are correct.
+- Eyeballing
+    - Not quantitive and reproducible method, but can give some insights if solution is at least working.
+- LLM to generate QA
+    - I provided just a mini example in `notebooks/eval.ipynb` how we can use prompt engineering to generate questions and aswers using LLM for a ceratin doc. Assuming this answer is correct, we can compare results of our solution and answer.
+- User Feedback
+    - Especially important in production phase. User's can report certain cases where model in not working properly.
+- Quantitive metrics:
+    - We have a dataset with ground truth:
+        - We can apply common NLP metrics like: BLEU, METEOR, ROUGE althugh they are based on exact matches, which may be not so applicable
+        - BERT score is based on capturing semantics with embeddins and does not require exact matches
+    - 
 
 ### Steps to run the app
 1. Use CloudFormation to set up the infrastructure. Main resources that are created: S3 bucket, Sagemaker Notebook Instance, roles.
