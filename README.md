@@ -5,18 +5,6 @@ This repository contains POC solution to the problem of knowledge retrieval from
 
 
 ### Introduction
-First of all, I want to underline that as in the task description, the following is only a POC and is used only to demonstrate the feasability of the solution. Based on POC solution it's possible to make more informative decissions for further development.
-
-Mainly, such POC is useful for:
-- Answering if this solution is feasible.
-- Estimating the effort of production deployment.
-- Designing final solution.
-- Experimenting with new frameworks.
-- Drawing a roadmap of deployment: what is the MVP, what are the project stages, ...
-- Determining future bottlenecks, i.e.: which components are slowest, where will be the highest traffic, what will be the main cost of the solution, which functionalities are easy / hard to implement, ...
-- Showing customer a first draft of the solution to get initial comments and feedback
-
-### Deliverable
 - Github repository with cloud formation template to create infrastructure and code to deploy the app locally.
 - Conversation bot is able to embedd documents and user queries and find most relevant documents to the query.
 - Bot is extracting the knowledge from the documents and based on this context, bot is formulating the answer as well as returns relative documents.
@@ -36,7 +24,7 @@ And couple of screenshots:
 
 ### Design
 
-As stated in the task description, I focused on using AWS components as much as I could. Also as mentioned before, I focused only on implementing some of the components to simplify the solution. My decission was motivated by the following factors:
+I focused on using AWS components as much as I could. Also as mentioned before, I focused only on implementing some of the components to simplify the solution. My decission was motivated by the following factors:
 - POC should provide sufficient functionality to demonstrate the faesability of the solution, it doesn't need to be a perfect, ready to go solution
 - I wanted to reduce costs of cloud services
 - Personal factor: time constraints
@@ -85,13 +73,8 @@ Diagram of the solution can be seen below:
 
 Note: I was experimenting with AWS Kendra for documentation retrieval system, which could replace both embeddigs and vector database component, but due to some limitations of Kendra, solution was not working properly.
 
-Other questions from the task that are not implemented by I want to share my ideas how I would approach it:
-- Allows users to use only some documents:
-    - If we know the users of our app, those are registered users for exmaple, we can "attach" region to each user and use filtering at the level of database retrieval to limit results only to the ones that are matching the region. How? Add metadata to each document. This should be easy task.
-    - Deploying whole solution in different regions and adding users to different regions. Each s3 bucket in different region will store only applicable documents.
-    - Or create different buckets for certain documents and add rules (based i.e. on geolocation of API calls) and limit access only to some resources.
-    
-- Updating the documnets:
+
+How about updating the documnets?
     - That's mostly at the level of storage layer (s3) and data ingestion layer to vector db. Depending on the scenario, we can embedd new version of document and delete the previous one as soon as new document will be added to s3. Or we can do batch transorm update (once a day, one a week, ...).
 
 #### Models
